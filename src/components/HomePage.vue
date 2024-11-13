@@ -2,9 +2,9 @@
 <template>
   <div class="home-page">
     <h2>Список товаров</h2>
-    <div class="actions">
+    <div class="actions" v-if="isAdmin">
       <button class="add-button" @click="openAddProduct">Добавить товар</button>
-      <button class="analytics-button" @click="goToAnalytics" v-if="products.length">Посмотреть аналитику</button>
+      <button class="analytics-button" @click="goToAnalytics">Посмотреть аналитику</button>
     </div>
 
     <div v-if="products.length" class="product-list">
@@ -15,7 +15,7 @@
           <p class="product-type">Тип товара: <strong>{{ product.type }}</strong></p>
           <p class="product-price">Цена: <strong>{{ product.price }} ₽</strong></p>
         </div>
-        <div class="product-card-actions">
+        <div class="product-card-actions" v-if="isAdmin">
           <button class="edit-button" @click="editProduct(product)">Редактировать</button>
           <button class="delete-button" @click="deleteProduct(product.id)">Удалить</button>
         </div>
@@ -29,9 +29,10 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useProductStore } from '../stores/ProductStore.js';
+import { useProductStore } from '../stores/ProductStore';
+import { useUserStore } from '../stores/UserStore';
 import ProductForm from './ProductForm.vue';
 
 export default {
@@ -39,11 +40,16 @@ export default {
   components: { ProductForm },
   setup() {
     const productStore = useProductStore();
+    const userStore = useUserStore();
     const router = useRouter();
     const showForm = ref(false);
     const currentProduct = ref(null);
 
-    const products = productStore.products;
+    // Проверка на администратора
+    const isAdmin = computed(() => userStore.user === 'admin');
+
+    // Продукты как реактивное свойство
+    const products = computed(() => productStore.products);
 
     const goToAnalytics = () => {
       router.push({ name: 'Analytics' });
@@ -79,6 +85,7 @@ export default {
     };
 
     return {
+      isAdmin,
       products,
       showForm,
       currentProduct,
@@ -92,6 +99,8 @@ export default {
   },
 };
 </script>
+
+
 
 
 
