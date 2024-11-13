@@ -3,10 +3,13 @@ import { defineStore } from 'pinia';
 
 export const useProductStore = defineStore('productStore', {
   state: () => ({
-    products: [],  // Массив для хранения продуктов
+    products: [],
   }),
   actions: {
     addProduct(product) {
+      product.purchases = 0;
+      product.likes = 0;
+      product.dislikes = 0;
       this.products.push(product);
     },
     updateProduct(updatedProduct) {
@@ -17,6 +20,18 @@ export const useProductStore = defineStore('productStore', {
     },
     deleteProduct(productId) {
       this.products = this.products.filter((product) => product.id !== productId);
+    },
+    incrementPurchases(productId) {
+      const product = this.products.find((p) => p.id === productId);
+      if (product) product.purchases++;
+    },
+    incrementLikes(productId) {
+      const product = this.products.find((p) => p.id === productId);
+      if (product) product.likes++;
+    },
+    incrementDislikes(productId) {
+      const product = this.products.find((p) => p.id === productId);
+      if (product) product.dislikes++;
     },
   },
 });

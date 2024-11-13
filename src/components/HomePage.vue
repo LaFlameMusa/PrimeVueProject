@@ -19,6 +19,11 @@
           <button class="edit-button" @click="editProduct(product)">Редактировать</button>
           <button class="delete-button" @click="deleteProduct(product.id)">Удалить</button>
         </div>
+        <div class="product-interactions">
+          <button class="buy-button" @click="buyProduct(product.id)">Купить</button>
+          <button class="like-button" @click="likeProduct(product.id)">Нравится</button>
+          <button class="dislike-button" @click="dislikeProduct(product.id)">Не нравится</button>
+        </div>
       </div>
     </div>
     
@@ -45,10 +50,7 @@ export default {
     const showForm = ref(false);
     const currentProduct = ref(null);
 
-    // Проверка на администратора
     const isAdmin = computed(() => userStore.user === 'admin');
-
-    // Продукты как реактивное свойство
     const products = computed(() => productStore.products);
 
     const goToAnalytics = () => {
@@ -79,6 +81,19 @@ export default {
       productStore.deleteProduct(id);
     };
 
+    // Обработчики для кнопок "Купить", "Нравится", "Не нравится"
+    const buyProduct = (id) => {
+      productStore.incrementPurchases(id);
+    };
+
+    const likeProduct = (id) => {
+      productStore.incrementLikes(id);
+    };
+
+    const dislikeProduct = (id) => {
+      productStore.incrementDislikes(id);
+    };
+
     const closeForm = () => {
       showForm.value = false;
       currentProduct.value = null;
@@ -93,12 +108,18 @@ export default {
       editProduct,
       saveProduct,
       deleteProduct,
+      buyProduct,
+      likeProduct,
+      dislikeProduct,
       goToAnalytics,
       closeForm,
     };
   },
 };
 </script>
+
+
+
 
 
 
@@ -226,5 +247,27 @@ export default {
 
 .delete-button:hover {
   background-color: #d32f2f;
+}
+
+
+.product-interactions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.buy-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.like-button {
+  background-color: #42a5f5;
+  color: white;
+}
+
+.dislike-button {
+  background-color: #f44336;
+  color: white;
 }
 </style>
